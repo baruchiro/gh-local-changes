@@ -77,7 +77,16 @@ func handleGitRepos(wg *sync.WaitGroup) {
 	}
 }
 
+func printLookingForContributors() {
+	log.Info("--------------------------------------------")
+	log.Info("This project was developed in a short time, before I returned my laptop to the IT department. I'm looking for contributors to help me improve it.")
+	log.Info("Any help is welcome, be it a suggestion, a bug report, a pull request...")
+	log.Info("https://github.com/baruchiro/gh-local-changes")
+	log.Info("--------------------------------------------")
+}
+
 func main() {
+	defer printLookingForContributors()
 	dir := "."
 	if len(os.Args) > 1 {
 		dir = os.Args[1]

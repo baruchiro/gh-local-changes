@@ -1,6 +1,6 @@
 module github.com/baruchiro/gh-local-changes
 
-go 1.22
+go 1.21
 
 require github.com/charmbracelet/log v0.3.1
 

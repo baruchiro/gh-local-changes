@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"text/tabwriter"
 
@@ -120,6 +121,9 @@ func main() {
 		}
 	}
 	w.Flush()
+
+	log.Info("To see the unpushed branches, run: git " + strings.Join(unpushedBranchesCommand, " "))
+	log.Info("To see the unpushed changes, run: git " + strings.Join(unpushedChangesCommand, " "))
 }
 
 // For more examples of using go-gh, see:

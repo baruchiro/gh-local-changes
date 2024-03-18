@@ -27,8 +27,10 @@ func runGit(folder string, commandAndArgs ...string) (string, error) {
 	return string(out), nil
 }
 
+var unpushedBranchesCommand = []string{"log", "--branches", "--not", "--remotes", `--pretty=format:"%h %d"`}
+
 func (r *GitRepo) getUnpushedBranches() (map[string]string, error) {
-	out, err := runGit(r.folder, "log", "--branches", "--not", "--remotes", `--pretty=format:"%h %d"`)
+	out, err := runGit(r.folder, unpushedBranchesCommand...)
 	if err != nil {
 		return nil, fmt.Errorf("error running git log: %w", err)
 	}
@@ -50,8 +52,10 @@ func (r *GitRepo) getUnpushedBranches() (map[string]string, error) {
 	return branches, nil
 }
 
+var unpushedChangesCommand = []string{"status", "--porcelain"}
+
 func (r *GitRepo) getUnpushedChanges() (int, error) {
-	out, err := runGit(r.folder, "status", "--porcelain")
+	out, err := runGit(r.folder, unpushedChangesCommand...)
 	if err != nil {
 		return -1, fmt.Errorf("error running git status: %w", err)
 	}

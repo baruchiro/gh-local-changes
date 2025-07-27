@@ -32,7 +32,7 @@ var unpushedBranchesCommand = []string{"log", "--branches", "--not", "--remotes"
 func (r *GitRepo) getUnpushedBranches() (map[string]string, error) {
 	out, err := runGit(r.folder, unpushedBranchesCommand...)
 	if err != nil {
-		return nil, fmt.Errorf("error running git log: %w", err)
+		return nil, fmt.Errorf("Error running git log: %w", err)
 	}
 
 	branches := make(map[string]string)

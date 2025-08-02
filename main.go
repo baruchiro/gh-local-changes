@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -38,7 +39,7 @@ func walkDirectory(dir string) error {
 			}
 			if info.Name() == ".git" {
 				repoFolder := filepath.Dir(path)
-				log.Debug("Found git repository:", repoFolder)
+				log.Debug("Found git repository", "path", repoFolder)
 				gitReposChan <- repoFolder
 				return filepath.SkipDir
 			}
@@ -50,7 +51,7 @@ func walkDirectory(dir string) error {
 func handleGitRepos(wg *sync.WaitGroup) {
 	defer wg.Done()
 	for repoFolder := range gitReposChan {
-		log.Debug("Processing git repository:", repoFolder)
+		log.Debug("Processing git repository", "path", repoFolder)
 		repo := &GitRepo{folder: repoFolder}
 		results := results{
 			repo:     repoFolder,
@@ -86,11 +87,16 @@ func printLookingForContributors() {
 	log.Info("--------------------------------------------")
 }
 
+var debug bool
+
 func main() {
 	defer printLookingForContributors()
+	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
+	flag.Parse()
+	args := flag.Args()
 	dir := "."
-	if len(os.Args) > 1 {
-		dir = os.Args[1]
+	if len(args) > 0 {
+		dir = args[0]
 		if dir == "-h" || dir == "--help" {
 			log.Info("Usage: go-gh [dir]")
 			os.Exit(0)
@@ -100,7 +106,10 @@ func main() {
 			log.Fatal("Directory does not exist:", dir)
 		}
 	}
-
+	//set log level as debug
+	if debug {
+		log.SetLevel(log.DebugLevel)
+	}
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go handleGitRepos(wg)

@@ -92,21 +92,25 @@ var debug bool
 func main() {
 	defer printLookingForContributors()
 	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
-	flag.Parse()
-	args := flag.Args()
+
 	dir := "."
-	if len(args) > 0 {
-		dir = args[0]
-		if dir == "-h" || dir == "--help" {
+	for _, arg := range os.Args[1:] {
+		if arg == "-h" || arg == "--help" {
 			log.Info("Usage: go-gh [dir]")
 			os.Exit(0)
 		}
+	}
+	flag.Parse()
+	parsedArgs := flag.Args()
+
+	if len(parsedArgs) > 0 {
+		dir = parsedArgs[0]
 		// Fail if the directory does not exist
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			log.Fatal("Directory does not exist:", dir)
 		}
 	}
-	//set log level as debug
+
 	if debug {
 		log.SetLevel(log.DebugLevel)
 	}

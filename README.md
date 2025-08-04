@@ -24,6 +24,13 @@ By default, GH Local Changes scans the current directory. You can specify a diff
 gh local-changes ~/source
 ```
 
+To print debug logs , use --debug flag :
+
+```
+gh local-changes --debug
+gh local-changes --debug  ~/source
+```
+
 GH Local Changes will recursively scan the specified directory for Git repositories. For each repository, it will report the branches and changes that have not been pushed to the remote repository.
 
 ## Contributing

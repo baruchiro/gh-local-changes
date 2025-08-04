@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -38,7 +39,7 @@ func walkDirectory(dir string) error {
 			}
 			if info.Name() == ".git" {
 				repoFolder := filepath.Dir(path)
-				log.Debug("Found git repository:", repoFolder)
+				log.Debug("Found git repository", "path", repoFolder)
 				gitReposChan <- repoFolder
 				return filepath.SkipDir
 			}
@@ -50,7 +51,7 @@ func walkDirectory(dir string) error {
 func handleGitRepos(wg *sync.WaitGroup) {
 	defer wg.Done()
 	for repoFolder := range gitReposChan {
-		log.Debug("Processing git repository:", repoFolder)
+		log.Debug("Processing git repository", "path", repoFolder)
 		repo := &GitRepo{folder: repoFolder}
 		results := results{
 			repo:     repoFolder,
@@ -86,21 +87,33 @@ func printLookingForContributors() {
 	log.Info("--------------------------------------------")
 }
 
+var debug bool
+
 func main() {
 	defer printLookingForContributors()
+	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
+
 	dir := "."
-	if len(os.Args) > 1 {
-		dir = os.Args[1]
-		if dir == "-h" || dir == "--help" {
+	for _, arg := range os.Args[1:] {
+		if arg == "-h" || arg == "--help" {
 			log.Info("Usage: go-gh [dir]")
 			os.Exit(0)
 		}
+	}
+	flag.Parse()
+	parsedArgs := flag.Args()
+
+	if len(parsedArgs) > 0 {
+		dir = parsedArgs[0]
 		// Fail if the directory does not exist
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			log.Fatal("Directory does not exist:", dir)
 		}
 	}
 
+	if debug {
+		log.SetLevel(log.DebugLevel)
+	}
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go handleGitRepos(wg)
